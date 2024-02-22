@@ -23,15 +23,15 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>UserId</th>
-                <th>EmployeeId</th>
+                <th>User Id</th>
+                <th>Employee Id</th>
                 <th>Email</th>
                 <th>Designation</th>
-                <th>ReportingManager</th>
-                <th>JoiningDate</th>
-                <th>DateOfBirth</th>
-                <th>DisplayName</th>
-                <th>RoleId</th>
+                <th>Reporting Manager</th>
+                <th>Joining Date</th>
+                <th>Date Of Birth</th>
+                <th>Display Name</th>
+                <th>Role Id</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -50,7 +50,7 @@ else
                     <td>@employee.DisplayName</td>
                     <td class="actions-icons">
                         <i class="fa-solid fa-pen" @onclick="() => UpdateEmployee(employee)"></i>
-                        <i class="fa-solid fa-trash"></i>
+                        <i class="fa-solid fa-trash" @onclick="() => DeleteEmployee(employee)"></i>
                     </td>
                 </tr>
             }
@@ -141,5 +141,10 @@ else
         newEmployee = null;
 
         HideModal();
+    }
+
+    private void DeleteEmployee(Employee data)
+    {
+        employees.Remove(data);
     }
 }
