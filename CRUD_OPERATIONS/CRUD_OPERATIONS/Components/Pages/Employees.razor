@@ -8,9 +8,12 @@
 
 <PageTitle>Employees</PageTitle>
 
-<h1>Employees</h1>
+<h1 class="title-employees">Employees</h1>
 
-<button class="btn btn-primary" @onclick="AddEmployee">Create new employee</button>
+<button class="btn btn-primary" @onclick="AddEmployee">
+    <i class="fa-solid fa-plus"></i>
+    Create new employee
+</button>
 
 <AddEmployeeModal ShowModal="@showModal" IsUpdate="@isUpdate" OnAddEmployee="HandleAddEmployee" OnUpdateEmployee="HandleUpdateEmployee" EmployeeToUpdate="newEmployee" />
 
@@ -45,9 +48,9 @@ else
                     <td>@employee.Designation</td>
                     <td>@employee.ReportingManager</td>
                     <td>@employee.JoiningDate</td>
-                    <td>@employee.JoiningDate</td>
                     <td>@employee.DateOfBirth</td>
                     <td>@employee.DisplayName</td>
+                    <td>@employee.RoleId</td>
                     <td class="actions-icons">
                         <i class="fa-solid fa-pen" @onclick="() => UpdateEmployee(employee)"></i>
                         <i class="fa-solid fa-trash" @onclick="() => DeleteEmployee(employee)"></i>

@@ -58,6 +58,33 @@ h1:focus {
 }
 
 .table .actions-icons .fa-pen {
-    cursor: pointer;
+    cursor: pointer; 
     color: #0a9334;
-} 
+}
+
+.title-employees {
+    margin-bottom: 80px;
+    color: #0b2464;
+}
+
+.modal-dialog {
+    box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.75);
+}
+
+.modal-title {
+    color: #0b2464;
+}
+
+.modal-body input {
+    margin-bottom: 10px;
+}
+
+.modal-header .close {
+    border: none;
+    background-color: white;
+}
+
+.modal-header .close .fa-circle-xmark {
+    color: #dc3545;
+}
+
