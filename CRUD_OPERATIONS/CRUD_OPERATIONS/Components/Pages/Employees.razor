@@ -1,16 +1,18 @@
 ﻿@page "/employees"
+@using AutoMapper
 @using CRUD_OPERATIONS.Components.Modals
 @using CRUD_OPERATIONS.Components.Models
 @using static CRUD_OPERATIONS.Components.Modals.AddEmployeeModal
 @rendermode InteractiveServer
+@inject IMapper mapper
 
 <PageTitle>Employees</PageTitle>
 
 <h1>Employees</h1>
 
-<button class="btn btn-primary" @onclick="ShowModal">Create new employee</button>
+<button class="btn btn-primary" @onclick="AddEmployee">Create new employee</button>
 
-<AddEmployeeModal ShowModal="@showModal" OnAddEmployee="HandleAddEmployee" />
+<AddEmployeeModal ShowModal="@showModal" IsUpdate="@isUpdate" OnAddEmployee="HandleAddEmployee" OnUpdateEmployee="HandleUpdateEmployee" EmployeeToUpdate="newEmployee" />
 
 @if (employees == null)
 {
@@ -34,19 +36,22 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in employees)
+            @foreach (var employee in employees)
             {
                 <tr>
-                    <td>@forecast.UserId</td>
-                    <td>@forecast.EmployeeId</td>
-                    <td>@forecast.Email</td>
-                    <td>@forecast.Designation</td>
-                    <td>@forecast.ReportingManager</td>
-                    <td>@forecast.JoiningDate</td>
-                    <td>@forecast.JoiningDate</td>
-                    <td>@forecast.DateOfBirth</td>
-                    <td>@forecast.DisplayName</td>
-                    <td>@forecast.RoleId</td>
+                    <td>@employee.UserId</td>
+                    <td>@employee.EmployeeId</td>
+                    <td>@employee.Email</td>
+                    <td>@employee.Designation</td>
+                    <td>@employee.ReportingManager</td>
+                    <td>@employee.JoiningDate</td>
+                    <td>@employee.JoiningDate</td>
+                    <td>@employee.DateOfBirth</td>
+                    <td>@employee.DisplayName</td>
+                    <td class="actions-icons">
+                        <i class="fa-solid fa-pen" @onclick="() => UpdateEmployee(employee)"></i>
+                        <i class="fa-solid fa-trash"></i>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -57,7 +62,9 @@ else
     private List<Employee>? employees;
     private int currentCount = 0;
     private bool showModal = false;
-    [Parameter] public NewEmployeeDTO? newEmployee { get; set; }
+    private bool isUpdate = false;
+    [Parameter] public Employee? newEmployee { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -78,7 +85,7 @@ else
         });
     }
 
-    private void HandleAddEmployee(NewEmployeeDTO data)
+    private void HandleAddEmployee(Employee data)
     {
         var employee = new Employee
             {
@@ -102,8 +109,37 @@ else
         showModal = false;
     }
 
-    private void ShowModal()
+    private void AddEmployee()
     {
         showModal = true;
+        isUpdate = false;
+    }
+
+    private void UpdateEmployee(Employee employee)
+    {
+        showModal = true;
+        isUpdate = true;
+        // newEmployee = mapper.Map<Employee>(employee);
+        newEmployee = employee;
+    }
+
+    private void HandleUpdateEmployee(Employee data)
+    {
+
+        var index = employees.FindIndex(x => x.UserId == data.UserId);
+
+        if (index != -1)
+        {
+            employees[index].Email = data.Email;
+            employees[index].Designation = data.Designation;
+            employees[index].ReportingManager = data.ReportingManager;
+            employees[index].JoiningDate = data.JoiningDate;
+            employees[index].DateOfBirth = data.DateOfBirth;
+            employees[index].DisplayName = data.DisplayName;
+        }
+
+        newEmployee = null;
+
+        HideModal();
     }
 }

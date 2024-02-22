@@ -1,10 +1,19 @@
 ﻿@using CRUD_OPERATIONS.Components.Models
+@using CRUD_OPERATIONS.Components.Pages
 
 <div class="modal" style="display:@(ShowModal ? "block" : "none")">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add Employee</h5>
+                @if (IsUpdate == true)
+                {
+                    <h5 class="modal-title">Update Employee</h5>
+                }
+                else
+                {
+                    <h5 class="modal-title">Add Employee</h5>
+                }
+
                 <button type="button" class="close" @onclick="HideModal">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -19,7 +28,16 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" @onclick="HideModal">Close</button>
-                <button type="button" class="btn btn-primary" @onclick="AddEmployee">Add</button>
+                
+                @if (IsUpdate == true)
+                {
+                    <button type="button" class="btn btn-primary" @onclick="UpdateEmployee">Update</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-primary" @onclick="AddEmployee">Add</button>
+                }
+
             </div>
         </div>
     </div>
@@ -27,8 +45,25 @@
 
 @code {
     [Parameter] public bool ShowModal { get; set; }
-    [Parameter] public EventCallback<NewEmployeeDTO> OnAddEmployee { get; set; }
-    private NewEmployeeDTO newEmployee = new NewEmployeeDTO();
+    [Parameter] public bool IsUpdate { get; set; }
+    [Parameter] public EventCallback<Employee> OnAddEmployee { get; set; }
+    [Parameter] public EventCallback<Employee> OnUpdateEmployee { get; set; }
+    private Employee newEmployee = new Employee();
+
+    [Parameter] public Employee? EmployeeToUpdate { get; set; }
+
+
+    protected override void OnParametersSet()
+    {
+        if (EmployeeToUpdate != null)
+        {
+            newEmployee = EmployeeToUpdate;
+        }
+        else
+        {
+            newEmployee = new Employee();
+        }
+    }
 
     private void HideModal()
     {
@@ -38,5 +73,10 @@
     private async Task AddEmployee()
     {
         await OnAddEmployee.InvokeAsync(newEmployee);
+    }
+
+    private async Task UpdateEmployee()
+    {
+        await OnUpdateEmployee.InvokeAsync(newEmployee);
     }
 }
