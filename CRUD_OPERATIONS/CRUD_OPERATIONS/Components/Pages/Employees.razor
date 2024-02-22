@@ -1,0 +1,85 @@
+﻿@page "/employees"
+
+<PageTitle>Employees</PageTitle>
+
+<h1>Employees</h1>
+
+
+@if (employees == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>UserId</th>
+                <th>EmployeeId</th>
+                <th>Email</th>
+                <th>Designation</th>
+                <th>ReportingManager</th>
+                <th>JoiningDate</th>
+                <th>DateOfBirth</th>
+                <th>DisplayName</th>
+                <th>RoleId</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in employees)
+            {
+                <tr>
+                    <td>@forecast.UserId</td>
+                    <td>@forecast.EmployeeId</td>
+                    <td>@forecast.Email</td>
+                    <td>@forecast.Designation</td>
+                    <td>@forecast.ReportingManager</td>
+                    <td>@forecast.JoiningDate</td>
+                    <td>@forecast.JoiningDate</td>
+                    <td>@forecast.DateOfBirth</td>
+                    <td>@forecast.DisplayName</td>
+                    <td>@forecast.RoleId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Employee>? employees;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+
+        employees = new List<Employee>();
+
+        employees.Add(new Employee
+            {
+                UserId = Guid.NewGuid(),
+                EmployeeId = Guid.NewGuid(),
+                Email = "email_test@gmail.com",
+                Designation = "designation_test",
+                ReportingManager = "reporting_manager_test",
+                JoiningDate = DateOnly.MaxValue,
+                DateOfBirth = DateOnly.MaxValue,
+                DisplayName = "name_test",
+                RoleId = Guid.NewGuid()
+            });
+
+    }
+
+    private class Employee
+    {
+        public Guid UserId { get; set; }
+        public Guid EmployeeId { get; set; }
+        public string Email { get; set; }
+        public string Designation { get; set; }
+        public string ReportingManager { get; set; }
+        public DateOnly JoiningDate { get; set; }
+        public DateOnly DateOfBirth { get; set; }
+        public string DisplayName { get; set; }
+        public Guid RoleId { get; set; }
+    }
+}
