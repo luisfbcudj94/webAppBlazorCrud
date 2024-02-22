@@ -19,12 +19,18 @@
                 </button>
             </div>
             <div class="modal-body">
-                <input type="text" @bind="newEmployee.Email" placeholder="Email" class="form-control" />
-                <input type="text" @bind="newEmployee.Designation" placeholder="Designation" class="form-control" />
-                <input type="text" @bind="newEmployee.ReportingManager" placeholder="Reporting Manager" class="form-control" />
-                <input type="date" @bind="newEmployee.JoiningDate" placeholder="Joining Date" class="form-control" />
-                <input type="date" @bind="newEmployee.DateOfBirth" placeholder="Date Of Birth" class="form-control" />
-                <input type="text" @bind="newEmployee.DisplayName" placeholder="Display Name" class="form-control" />
+                <label>Email</label>
+                <input type="text" @bind="newEmployee.Email" placeholder="Email" class="form-control" required/>
+                <label>Designation</label>
+                <input type="text" @bind="newEmployee.Designation" placeholder="Designation" class="form-control" required />
+                <label>Reporting Manager</label>
+                <input type="text" @bind="newEmployee.ReportingManager" placeholder="Reporting Manager" class="form-control" required />
+                <label>Joining Date</label>
+                <input type="date" @bind="newEmployee.JoiningDate" class="form-control" required />
+                <label>Date Of Birth</label>
+                <input type="date" @bind="newEmployee.DateOfBirth" class="form-control" required />
+                <label>Display Name</label>
+                <input type="text" @bind="newEmployee.DisplayName" placeholder="Display Name" class="form-control" required />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" @onclick="HideModal">Close</button>
@@ -72,11 +78,32 @@
 
     private async Task AddEmployee()
     {
-        await OnAddEmployee.InvokeAsync(newEmployee);
+        if (ValidateForm())
+        {
+            await OnAddEmployee.InvokeAsync(newEmployee);
+        }
     }
 
     private async Task UpdateEmployee()
     {
-        await OnUpdateEmployee.InvokeAsync(newEmployee);
+        if (ValidateForm())
+        {
+            await OnUpdateEmployee.InvokeAsync(newEmployee);
+        }
+    }
+
+    private bool ValidateForm()
+    {
+        if (string.IsNullOrWhiteSpace(newEmployee.Email) ||
+            string.IsNullOrWhiteSpace(newEmployee.Designation) ||
+            string.IsNullOrWhiteSpace(newEmployee.ReportingManager) ||
+            newEmployee.JoiningDate == default ||
+            newEmployee.DateOfBirth == default ||
+            string.IsNullOrWhiteSpace(newEmployee.DisplayName))
+        {
+            return false;
+        }
+
+        return true;
     }
 }
