@@ -1,9 +1,16 @@
 ﻿@page "/employees"
+@using CRUD_OPERATIONS.Components.Modals
+@using CRUD_OPERATIONS.Components.Models
+@using static CRUD_OPERATIONS.Components.Modals.AddEmployeeModal
+@rendermode InteractiveServer
 
 <PageTitle>Employees</PageTitle>
 
 <h1>Employees</h1>
 
+<button class="btn btn-primary" @onclick="ShowModal">Create new employee</button>
+
+<AddEmployeeModal ShowModal="@showModal" OnAddEmployee="HandleAddEmployee" />
 
 @if (employees == null)
 {
@@ -48,38 +55,55 @@ else
 
 @code {
     private List<Employee>? employees;
+    private int currentCount = 0;
+    private bool showModal = false;
+    [Parameter] public NewEmployeeDTO? newEmployee { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(500);
 
         employees = new List<Employee>();
-
         employees.Add(new Employee
+        {
+            UserId = Guid.NewGuid(),
+            EmployeeId = Guid.NewGuid(),
+            Email = "email_test@gmail.com",
+            Designation = "designation_test",
+            ReportingManager = "reporting_manager_test",
+            JoiningDate = DateOnly.MaxValue,
+            DateOfBirth = DateOnly.MaxValue,
+            DisplayName = "name_test",
+            RoleId = Guid.NewGuid()
+        });
+    }
+
+    private void HandleAddEmployee(NewEmployeeDTO data)
+    {
+        var employee = new Employee
             {
                 UserId = Guid.NewGuid(),
                 EmployeeId = Guid.NewGuid(),
-                Email = "email_test@gmail.com",
-                Designation = "designation_test",
-                ReportingManager = "reporting_manager_test",
-                JoiningDate = DateOnly.MaxValue,
-                DateOfBirth = DateOnly.MaxValue,
-                DisplayName = "name_test",
+                Email = data.Email,
+                Designation = data.Designation,
+                ReportingManager = data.ReportingManager,
+                JoiningDate = data.JoiningDate,
+                DateOfBirth = data.DateOfBirth,
+                DisplayName = data.DisplayName,
                 RoleId = Guid.NewGuid()
-            });
+            };
 
+        employees?.Add(employee);
+        HideModal();
     }
 
-    private class Employee
+    private void HideModal()
     {
-        public Guid UserId { get; set; }
-        public Guid EmployeeId { get; set; }
-        public string Email { get; set; }
-        public string Designation { get; set; }
-        public string ReportingManager { get; set; }
-        public DateOnly JoiningDate { get; set; }
-        public DateOnly DateOfBirth { get; set; }
-        public string DisplayName { get; set; }
-        public Guid RoleId { get; set; }
+        showModal = false;
+    }
+
+    private void ShowModal()
+    {
+        showModal = true;
     }
 }

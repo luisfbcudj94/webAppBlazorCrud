@@ -1,0 +1,42 @@
+﻿@using CRUD_OPERATIONS.Components.Models
+
+<div class="modal" style="display:@(ShowModal ? "block" : "none")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Employee</h5>
+                <button type="button" class="close" @onclick="HideModal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" @bind="newEmployee.Email" placeholder="Email" class="form-control" />
+                <input type="text" @bind="newEmployee.Designation" placeholder="Designation" class="form-control" />
+                <input type="text" @bind="newEmployee.ReportingManager" placeholder="ReportingManager" class="form-control" />
+                <input type="date" @bind="newEmployee.JoiningDate" placeholder="JoiningDate" class="form-control" />
+                <input type="date" @bind="newEmployee.DateOfBirth" placeholder="DateOfBirth" class="form-control" />
+                <input type="text" @bind="newEmployee.DisplayName" placeholder="DisplayName" class="form-control" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="HideModal">Close</button>
+                <button type="button" class="btn btn-primary" @onclick="AddEmployee">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool ShowModal { get; set; }
+    [Parameter] public EventCallback<NewEmployeeDTO> OnAddEmployee { get; set; }
+    private NewEmployeeDTO newEmployee = new NewEmployeeDTO();
+
+    private void HideModal()
+    {
+        ShowModal = false;
+    }
+
+    private async Task AddEmployee()
+    {
+        await OnAddEmployee.InvokeAsync(newEmployee);
+    }
+}
