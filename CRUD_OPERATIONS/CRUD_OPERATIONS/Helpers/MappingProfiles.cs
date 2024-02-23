@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Blazorise;
-using CRUD_OPERATIONS.Components.Models;
+using CRUD_OPERATIONS.Models;
 
 namespace CRUD_OPERATIONS.Components.Helpers
 {
