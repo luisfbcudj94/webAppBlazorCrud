@@ -51,8 +51,8 @@ h1:focus {
 }
 
 
-.table .actions-icons .fa-trash {
-    margin-left: 40%;
+.table .actions-icons .fa-trash { 
+    margin-left: 20%;
     cursor: pointer;
     color: #b32121;
 }

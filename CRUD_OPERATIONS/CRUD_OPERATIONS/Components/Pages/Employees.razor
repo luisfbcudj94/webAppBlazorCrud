@@ -3,6 +3,8 @@
 @using CRUD_OPERATIONS.Components.Modals
 @using CRUD_OPERATIONS.Models
 @using static CRUD_OPERATIONS.Components.Modals.AddEmployeeModal
+@using Blazored.Toast
+@using BlazorBootstrap;
 @rendermode InteractiveServer
 @inject IMapper mapper
 
@@ -16,6 +18,8 @@
 </button>
 
 <AddEmployeeModal ShowModal="@showModal" IsUpdate="@isUpdate" OnAddEmployee="HandleAddEmployee" OnUpdateEmployee="HandleUpdateEmployee" EmployeeToUpdate="newEmployee" />
+
+<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" />
 
 @if (employees == null)
 {
@@ -67,6 +71,7 @@ else
     private bool isUpdate = false;
     [Parameter] public Employee? newEmployee { get; set; }
 
+    List<ToastMessage> messages = new List<ToastMessage>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,7 +87,7 @@ else
             ReportingManager = "reporting_manager_test",
             JoiningDate = DateOnly.MaxValue,
             DateOfBirth = DateOnly.MaxValue,
-            DisplayName = "name_test",
+            DisplayName = "Luis Alejandro",
             RoleId = Guid.NewGuid()
         });
     }
@@ -103,6 +108,16 @@ else
             };
 
         employees?.Add(employee);
+
+        ToastMessage showMessage = new ToastMessage
+            {
+                Type = ToastType.Success,
+                Title = "Employee added successfully!",
+                Message = $"Employee {data.DisplayName} has been successfully added",
+            };
+
+        messages.Add(showMessage);
+
         HideModal();
     }
 
@@ -138,6 +153,15 @@ else
             employees[index].JoiningDate = data.JoiningDate;
             employees[index].DateOfBirth = data.DateOfBirth;
             employees[index].DisplayName = data.DisplayName;
+
+            ToastMessage showMessage = new ToastMessage
+                {
+                    Type = ToastType.Success,
+                    Title = "Employee data updated successfully!",
+                    Message = $"The data for employee {data.DisplayName} has been updated.",
+                };
+
+            messages.Add(showMessage);
         }
 
         newEmployee = null;
@@ -148,5 +172,14 @@ else
     private void DeleteEmployee(Employee data)
     {
         employees.Remove(data);
+
+        ToastMessage showMessage = new ToastMessage
+            {
+                Type = ToastType.Success,
+                Title = "Employee removed successfully!",
+                Message = $"The employee named {data.DisplayName} has been removed.",
+            };
+
+        messages.Add(showMessage);
     }
 }
