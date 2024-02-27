@@ -1,0 +1,171 @@
+﻿@using AutoMapper
+@using FrontEnd.Application.DTOs
+@using FrontEnd.Application.Interfaces
+@using Blazored.Toast;
+@using BlazorBootstrap;
+@using CurrieTechnologies.Razor.SweetAlert2;
+
+@inject IUsersService userSerive
+@inject IMapper mapper
+@inject SweetAlertService alert;
+
+<div class="modal" style="display:@(ShowModal ? "block" : "none")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (IsUpdate == true)
+                {
+                    <h5 class="modal-title">Update Employee</h5>
+                }
+                else
+                {
+                    <h5 class="modal-title">Add Employee</h5>
+                }
+
+                <button type="button" class="close" @onclick="HideModal">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label>Email</label>
+                <input type="text" @bind="newUser.Email" placeholder="Email" class="form-control" required />
+                <label>Designation</label>
+                <input type="text" @bind="newUser.Designation" placeholder="Designation" class="form-control" required />
+                <label>Reporting Manager</label>
+                <input type="text" @bind="newUser.ReportingManager" placeholder="Reporting Manager" class="form-control" required />
+                <label>Joining Date</label>
+                <input type="date" @bind="newUser.JoiningDate" class="form-control" required />
+                <label>Date Of Birth</label>
+                <input type="date" @bind="newUser.DateOfBirth" class="form-control" required />
+                <label>Display Name</label>
+                <input type="text" @bind="newUser.DisplayName" placeholder="Display Name" class="form-control" required />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" @onclick="HideModal">Close</button>
+
+                @if (IsUpdate == true)
+                {
+                    <button type="button" class="btn btn-primary" @onclick="UpdateEmployee">Update</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-primary" @onclick="AddEmployee">Add</button>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    UserDTO? user = null;
+
+    [Parameter] public bool ShowModal { get; set; }
+    [Parameter] public bool IsUpdate { get; set; }
+
+    private UserDTO newUser = new UserDTO();
+
+    [Parameter] public UserDTO? UserToUpdate { get; set; }
+    [Parameter] public EventCallback OnGetUsers { get; set; }
+
+
+    protected override void OnParametersSet()
+    {
+        if (UserToUpdate != null)
+        {
+            newUser = UserToUpdate;
+        }
+        else
+        {
+            newUser = new UserDTO();
+        }
+    }
+
+    private void HideModal()
+    {
+        ShowModal = false;
+    }
+
+    private async Task AddEmployee()
+    {
+        if (await ValidateForm())
+        {
+            var response = await userSerive.CreateUser(newUser);
+
+            if (response)
+            {
+                await alert.FireAsync(new SweetAlertOptions
+                    {
+                        Title = "User added successfully.",
+                        Text = $"The user with the name {newUser.DisplayName} has been successfully added",
+                        Icon = SweetAlertIcon.Success,
+                        ShowCancelButton = false
+                    });
+            }
+            else
+            {
+                await alert.FireAsync(new SweetAlertOptions
+                    {
+                        Title = "There has been an error.",
+                        Text = "An error has occurred. Please try again later.",
+                        Icon = SweetAlertIcon.Error,
+                        ShowCancelButton = false
+                    });
+            }
+                 
+            await OnGetUsers.InvokeAsync();
+        }
+    }
+
+    private async Task UpdateEmployee()
+    {
+        var response = await userSerive.UpdateById(newUser.UserId, mapper.Map<UpdateUserDTO>(UserToUpdate));
+
+            if (response)
+            {
+                await alert.FireAsync(new SweetAlertOptions
+                    {
+                        Title = "User updated successfully.",
+                        Text = $"The user with the name {newUser.DisplayName} has been successfully updated",
+                        Icon = SweetAlertIcon.Success,
+                        ShowCancelButton = false
+                    });
+            }
+            else
+            {
+                await alert.FireAsync(new SweetAlertOptions
+                    {
+                        Title = "There has been an error.",
+                        Text = "An error has occurred. Please try again later.",
+                        Icon = SweetAlertIcon.Error,
+                        ShowCancelButton = false
+                    });
+            }
+
+        await OnGetUsers.InvokeAsync();
+    }
+
+    private async Task<bool> ValidateForm()
+    {
+        if (string.IsNullOrWhiteSpace(newUser.Email) ||
+            string.IsNullOrWhiteSpace(newUser.Designation) ||
+            string.IsNullOrWhiteSpace(newUser.ReportingManager) ||
+            newUser.JoiningDate == default ||
+            newUser.DateOfBirth == default ||
+            string.IsNullOrWhiteSpace(newUser.DisplayName))
+        {
+            var resultAlert = await alert.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Incomplete form",
+                    Text = "You must fill out all fields correctly to proceed.",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCancelButton = false
+            });
+
+            return false;
+        }
+
+        return true;
+    }
+}
