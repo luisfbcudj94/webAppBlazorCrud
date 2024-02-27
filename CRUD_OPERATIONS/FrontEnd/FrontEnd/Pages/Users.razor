@@ -1,0 +1,142 @@
+﻿@page "/"
+
+@using BlazorBootstrap
+@using FrontEnd.Application.DTOs
+@using FrontEnd.Application.Interfaces
+@using FrontEnd.Modals
+@using CurrieTechnologies.Razor.SweetAlert2;
+
+@inject IUsersService userSerive;
+@inject SweetAlertService alert;
+
+<nav class="navbar navbar-dark bg-primary">
+    <a class="navbar-brand">CRUD OPERATIONS</a>
+</nav>
+
+<div class="title-table">
+
+    <h1>Users</h1>
+
+    <button class="btn btn-primary" @onclick="AddEmployee">
+        <i class="fa-solid fa-plus"></i>
+        Create new employee
+    </button>
+
+</div>
+
+
+<UserInformationModal ShowModal="@showModal" IsUpdate="@isUpdate" UserToUpdate="newUser" OnGetUsers="GetUsers"></UserInformationModal>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>User Id</th>
+            <th>Employee Id</th>
+            <th>Email</th>
+            <th>Designation</th>
+            <th>Reporting Manager</th>
+            <th>Joining Date</th>
+            <th>Date Of Birth</th>
+            <th>Display Name</th>
+            <th>Role Id</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (users != null)
+        {
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.UserId</td>
+                    <td>@user.EmployeeId</td>
+                    <td>@user.Email</td>
+                    <td>@user.Designation</td>
+                    <td>@user.ReportingManager</td>
+                    <td>@user.JoiningDate</td>
+                    <td>@user.DateOfBirth</td>
+                    <td>@user.DisplayName</td>
+                    <td>@user.RoleId</td>
+                    <td class="actions-icons">
+                        <i class="fa-solid fa-pen" @onclick="() => UpdateEmployee(user)"></i>
+                        <i class="fa-solid fa-trash" @onclick="() => DeleteEmployee(user.UserId)"></i>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <p>No users available.</p>
+        }
+    </tbody>
+</table>
+
+
+@code {
+
+    List<UserDTO>? users = null;
+    [Parameter] public UserDTO? newUser { get; set; }
+
+    private bool showModal = false;
+    private bool isUpdate = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUsers();
+    }
+
+    private async Task GetUsers()
+    {
+        users = await userSerive.GetAll();
+        showModal = false;
+    }
+
+    private void UpdateEmployee(UserDTO user)
+    {
+        showModal = true;
+        isUpdate = true;
+        newUser = user;
+    }
+
+    private async Task DeleteEmployee(Guid userId)
+    {
+        var response = await userSerive.RemoveById(userId);
+
+        if (response)
+        {
+            await alert.FireAsync(new SweetAlertOptions
+                {
+                    Title = "User deleted successfully.",
+                    Text = $"The user has been successfully deleted",
+                    Icon = SweetAlertIcon.Success,
+                    ShowCancelButton = false
+                });
+        }
+        else
+        {
+            await alert.FireAsync(new SweetAlertOptions
+                {
+                    Title = "There has been an error.",
+                    Text = "An error has occurred. Please try again later.",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCancelButton = false
+                });
+        }
+
+        await GetUsers();
+    }
+
+    private void HideModal()
+    {
+        showModal = false;
+    }
+
+    private void AddEmployee()
+    {
+        showModal = true;
+        isUpdate = false;
+    }
+
+
+}

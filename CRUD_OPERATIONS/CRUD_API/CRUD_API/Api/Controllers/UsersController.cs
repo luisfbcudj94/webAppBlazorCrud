@@ -8,7 +8,7 @@ using System.Reflection.Metadata.Ecma335;
 namespace CRUD_API.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
         private readonly IUsersService _operationService;

@@ -1,8 +1,6 @@
-﻿using CRUD_API.Application.DTOs;
-using CRUD_API.Domain.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using CRUD_OPERATIONS.Application.DTOs;
 
-namespace CRUD_API.Application.Interfaces
+namespace CRUD_OPERATIONS.Application.Interfaces
 {
     public interface IUsersService
     {
@@ -40,7 +38,5 @@ namespace CRUD_API.Application.Interfaces
         /// <param name="id">The ID of the user to remove.</param>
         /// <returns>Returns true if the user was removed successfully; otherwise, false.</returns>
         Task<bool> RemoveById(Guid userId);
-        
-        //Task<bool> InitDatabase();
     }
 }
