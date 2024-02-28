@@ -19,7 +19,7 @@
 
     <button class="btn btn-primary" @onclick="AddEmployee">
         <i class="fa-solid fa-plus"></i>
-        Create new employee
+        Create new user
     </button>
 
 </div>
@@ -27,10 +27,10 @@
 
 <UserInformationModal ShowModal="@showModal" IsUpdate="@isUpdate" UserToUpdate="newUser" OnGetUsers="GetUsers"></UserInformationModal>
 
-<table class="table">
-    <thead>
+<table class="table table-hover">
+    <thead class="table-primary">
         <tr>
-            <th>User Id</th>
+            <th >User Id</th>
             <th>Employee Id</th>
             <th>Email</th>
             <th>Designation</th>

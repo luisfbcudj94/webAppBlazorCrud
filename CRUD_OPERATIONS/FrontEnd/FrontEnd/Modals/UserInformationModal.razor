@@ -34,7 +34,7 @@
                 <label>Reporting Manager</label>
                 <input type="text" @bind="newUser.ReportingManager" placeholder="Reporting Manager" class="form-control" required />
                 <label>Joining Date</label>
-                <input type="date" @bind="newUser.JoiningDate" class="form-control" required />
+                <input type="date" @bind="newUser.JoiningDate" class="form-control" required max="@DateTime.Today.ToString("yyyy-MM-dd")"/>
                 <label>Date Of Birth</label>
                 <input type="date" @bind="newUser.DateOfBirth" class="form-control" required />
                 <label>Display Name</label>
