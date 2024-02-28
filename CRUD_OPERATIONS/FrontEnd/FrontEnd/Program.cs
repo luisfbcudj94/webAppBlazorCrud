@@ -20,6 +20,8 @@ builder.Services.AddFontAwesomeIcons();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7044") });
 
+//builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://crudapi20240227170805.azurewebsites.net") });
+
 builder.Services.AddScoped<IUsersService, UsersService>();
 
 builder.Services.AddSweetAlert2();

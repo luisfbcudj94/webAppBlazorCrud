@@ -113,7 +113,7 @@
                         ShowCancelButton = false
                     });
             }
-                 
+
             await OnGetUsers.InvokeAsync();
         }
     }
@@ -122,26 +122,28 @@
     {
         var response = await userSerive.UpdateById(newUser.UserId, mapper.Map<UpdateUserDTO>(UserToUpdate));
 
-            if (response)
-            {
-                await alert.FireAsync(new SweetAlertOptions
-                    {
-                        Title = "User updated successfully.",
-                        Text = $"The user with the name {newUser.DisplayName} has been successfully updated",
-                        Icon = SweetAlertIcon.Success,
-                        ShowCancelButton = false
-                    });
-            }
-            else
-            {
-                await alert.FireAsync(new SweetAlertOptions
-                    {
-                        Title = "There has been an error.",
-                        Text = "An error has occurred. Please try again later.",
-                        Icon = SweetAlertIcon.Error,
-                        ShowCancelButton = false
-                    });
-            }
+        if (response)
+        {
+            await alert.FireAsync(new SweetAlertOptions
+                {
+                    Title = "User updated successfully.",
+                    Text = $"The user with the name {newUser.DisplayName} has been successfully updated",
+                    Icon = SweetAlertIcon.Success,
+                    ShowCancelButton = false
+                });
+        }
+        else
+        {
+            await alert.FireAsync(new SweetAlertOptions
+                {
+                    Title = "There has been an error.",
+                    Text = "An error has occurred. Please try again later.",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCancelButton = false
+                });
+        }
+
+        newUser = new UserDTO();
 
         await OnGetUsers.InvokeAsync();
     }
