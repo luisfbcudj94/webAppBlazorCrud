@@ -25,7 +25,9 @@
 </div>
 
 
-<UserInformationModal ShowModal="@showModal" IsUpdate="@isUpdate" UserToUpdate="newUser" OnGetUsers="GetUsers"></UserInformationModal>
+@* <UserInformationModal ShowModal="@showModal" IsUpdate="@isUpdate" UserToUpdate="newUser" OnGetUsers="GetUsers"></UserInformationModal> *@
+
+<UserInformationModal ShowModal="@showModal" IsUpdate="@isUpdate" UserToUpdate="newUser" OnGetUsers="GetUsersPaginated"></UserInformationModal>
 
 <table class="table table-hover">
     <thead class="table-primary">
@@ -96,17 +98,15 @@
             items per page
         </button>
         <ul class="dropdown-menu">
-            <li><a class="dropdown-item">1</a></li>
-            <li><a class="dropdown-item">5</a></li>
-            <li><a class="dropdown-item">10</a></li>
-            <li><a class="dropdown-item">20</a></li>
+            <li><a class="dropdown-item" @onclick="() => SetPageSize(1)">1</a></li>
+            <li><a class="dropdown-item" @onclick="() => SetPageSize(5)">5</a></li>
+            <li><a class="dropdown-item" @onclick="() => SetPageSize(10)">10</a></li>
+            <li><a class="dropdown-item" @onclick="() => SetPageSize(20)">20</a></li>
         </ul>
     </div>
 
+
 </div>
-
-
-
 
 
 
@@ -118,15 +118,33 @@
     private bool showModal = false;
     private bool isUpdate = false;
 
+    private int pageNumber = 1;
+    private int pageSize = 1;
+
 
     protected override async Task OnInitializedAsync()
     {
-        await GetUsers();
+        // await GetUsers();
+        await GetUsersPaginated();
     }
 
-    private async Task GetUsers()
+    // private async Task GetUsers()
+    // {
+    //     users = await userSerive.GetAll();
+    //     showModal = false;
+    // }
+
+    private async Task SetPageSize(int size)
     {
-        users = await userSerive.GetAll();
+        pageSize = size;
+        await GetUsersPaginated();
+    }
+
+    private async Task GetUsersPaginated()
+    {
+        var userPaginated = await userSerive.GetAllPaginated(pageNumber, pageSize);
+        users = userPaginated.Data;
+
         showModal = false;
     }
 
@@ -162,7 +180,8 @@
                 });
         }
 
-        await GetUsers();
+        // await GetUsers();
+        await GetUsersPaginated();
     }
 
     private void HideModal()

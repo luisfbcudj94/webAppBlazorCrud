@@ -1,4 +1,5 @@
 ﻿using FrontEnd.Application.DTOs;
+using FrontEnd.Helpers.Paging;
 
 namespace FrontEnd.Application.Interfaces
 {
@@ -38,5 +39,7 @@ namespace FrontEnd.Application.Interfaces
         /// <param name="id">The ID of the user to remove.</param>
         /// <returns>Returns true if the user was removed successfully; otherwise, false.</returns>
         Task<bool> RemoveById(Guid userId);
+
+        Task<PaginatedList<UserDTO>> GetAllPaginated(int pageNumber, int pageSize);
     }
 }

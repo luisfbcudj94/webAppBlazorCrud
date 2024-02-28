@@ -1,5 +1,6 @@
 ﻿using FrontEnd.Application.DTOs;
 using FrontEnd.Application.Interfaces;
+using FrontEnd.Helpers.Paging;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Json;
@@ -44,6 +45,14 @@ namespace FrontEnd.Application.Services
         {
 
             var result = await _http.GetFromJsonAsync<List<UserDTO>>("api/Users");
+
+            return result;
+        }
+
+        public async Task<PaginatedList<UserDTO>> GetAllPaginated(int pageNumber, int pageSize)
+        {
+
+            var result = await _http.GetFromJsonAsync<PaginatedList<UserDTO>>($"api/Users/paginated?pageNumber={pageNumber}&pageSize={pageSize}");
 
             return result;
         }
