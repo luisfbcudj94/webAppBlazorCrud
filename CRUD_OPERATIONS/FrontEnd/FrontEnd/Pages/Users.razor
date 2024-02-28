@@ -75,23 +75,37 @@
 
 <div class="container-pagination">
 
-    <nav>
-        <ul class="pagination">
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <div class="pagination">
+
+        <button class="btn btn-outline-primary" disabled="@(!hasPrevious)" @onclick="() => ChangePage(pageNumber - 1)">
+            <span aria-hidden="true">&laquo;</span>
+        </button>
+
+        @for (int i = 1; i <= Math.Min(pageCount, 4); i++)
+        {
+            int currentPage = i;
+
+            <button class="btn @(currentPage == pageNumber ? "btn-outline-primary active" : "btn-outline-primary")" @onclick="() => ChangePage(currentPage)">
+                @currentPage
+            </button>
+
+        }
+
+        @if (pageCount > 5)
+        {
+            <button class="btn btn-outline-primary">
+                ...
+            </button>
+            <button class="btn @(pageCount == pageNumber ? "btn-outline-primary active" : "btn-outline-primary")" @onclick="() => ChangePage(pageCount)">
+                @pageCount
+            </button>
+        }
+
+        <button class="btn btn-outline-primary" disabled="@(!hasNext)" @onclick="() => ChangePage(pageNumber + 1)">
+            <span aria-hidden="true">&raquo;</span>
+        </button>
+
+    </div>
 
     <div class="dropup-center dropup">
         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -120,30 +134,43 @@
 
     private int pageNumber = 1;
     private int pageSize = 1;
+    private int pageCount = 0;
+    private bool hasPrevious = false;
+    private bool hasNext = false;
 
+    private int selectedPage = 1;
 
     protected override async Task OnInitializedAsync()
     {
-        // await GetUsers();
         await GetUsersPaginated();
     }
 
-    // private async Task GetUsers()
-    // {
-    //     users = await userSerive.GetAll();
-    //     showModal = false;
-    // }
-
     private async Task SetPageSize(int size)
     {
+        pageNumber = 1;
         pageSize = size;
+
         await GetUsersPaginated();
+    }
+
+    private async Task ChangePage(int newPage)
+    {
+        if (newPage >= 1 && newPage <= pageCount)
+        {
+            pageNumber = newPage;
+            selectedPage = newPage;
+            await GetUsersPaginated();
+        }
     }
 
     private async Task GetUsersPaginated()
     {
         var userPaginated = await userSerive.GetAllPaginated(pageNumber, pageSize);
+
         users = userPaginated.Data;
+        pageCount = userPaginated.PageCount;
+        hasPrevious = userPaginated.HasPrevious;
+        hasNext = userPaginated.HasNext;
 
         showModal = false;
     }
@@ -180,7 +207,6 @@
                 });
         }
 
-        // await GetUsers();
         await GetUsersPaginated();
     }
 
