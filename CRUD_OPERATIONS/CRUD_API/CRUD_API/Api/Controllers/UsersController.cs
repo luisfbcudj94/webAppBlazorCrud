@@ -1,5 +1,6 @@
 ﻿using CRUD_API.Application.DTOs;
 using CRUD_API.Application.Interfaces;
+using CRUD_API.DataManager.Paging;
 using CRUD_API.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,26 @@ namespace CRUD_API.Api.Controllers
         public async Task<List<UserDTO>> GetAllAsync()
         {
             var result = await _operationService.GetAll();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get all users paginated.
+        /// </summary>
+        /// <param name="pageNumber">The page number for pagination. Defaults to 1.</param>
+        /// <param name="pageSize">The number of records to retrieve per page. Defaults to 4.</param>
+        /// <returns>Returns a list of all users paginated.</returns>
+        [HttpGet("paginated")]
+        [SwaggerOperation(Summary = "Get all users paginated.")]
+        public async Task<PaginatedList<UserDTO>> GetAllPaginatedAsync(
+            [SwaggerParameter("Page number for pagination.")]
+            int pageNumber = 1,
+            [SwaggerParameter("Number of records per page.")]
+            int pageSize = 4
+            )
+        {
+            var result = await _operationService.GetAll(pageNumber, pageSize);
 
             return result;
         }

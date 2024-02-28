@@ -1,4 +1,5 @@
 ﻿using CRUD_API.Application.DTOs;
+using CRUD_API.DataManager.Paging;
 using CRUD_API.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,14 @@ namespace CRUD_API.Application.Interfaces
         /// </summary>
         /// <returns>Returns a list of all users.</returns>
         Task<List<UserDTO>> GetAll();
+
+        /// <summary>
+        /// Get all users paginated.
+        /// </summary>
+        /// <param name="pageNumber">The page number for pagination. Defaults to 1.</param>
+        /// <param name="pageSize">The number of records to retrieve per page. Defaults to 4.</param>
+        /// <returns>Returns a list of all users paginated.</returns>
+        Task<PaginatedList<UserDTO>> GetAll(int pageNumber = 1, int pageSize = 4);
 
         /// <summary>
         /// Retrieves a user by their ID.
@@ -40,7 +49,7 @@ namespace CRUD_API.Application.Interfaces
         /// <param name="id">The ID of the user to remove.</param>
         /// <returns>Returns true if the user was removed successfully; otherwise, false.</returns>
         Task<bool> RemoveById(Guid userId);
-        
+
         //Task<bool> InitDatabase();
     }
 }

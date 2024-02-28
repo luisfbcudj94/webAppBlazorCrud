@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CRUD_API.Application.DTOs;
+using CRUD_API.DataManager.Paging;
 using CRUD_API.Domain.Models;
 using CRUD_API.Infrastructure.Interfaces;
 using CRUD_API.Persistence;
@@ -36,6 +37,31 @@ namespace CRUD_API.Infrastructure.Repositories
 
             return _mapper.Map<List<UserDTO>>(result);
         }
+
+        /// <summary>
+        /// Get all users paginated.
+        /// </summary>
+        /// <param name="pageNumber">The page number for pagination. Defaults to 1.</param>
+        /// <param name="pageSize">The number of records to retrieve per page. Defaults to 4.</param>
+        /// <returns>Returns a list of all users paginated.</returns>
+        public async Task<PaginatedList<UserDTO>> GetAll(int pageNumber = 1, int pageSize = 4)
+        {
+            var result = await _db.Employees
+                                .Skip((pageNumber - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToListAsync();
+
+            var totalCount = await _db.Employees.CountAsync();
+
+            return new PaginatedList<UserDTO>
+            {
+                Data = _mapper.Map<List<UserDTO>>(result),
+                TotalItemCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
 
         /// <summary>
         /// Retrieves a user by their ID.
