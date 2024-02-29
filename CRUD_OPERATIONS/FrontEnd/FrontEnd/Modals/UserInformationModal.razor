@@ -4,6 +4,7 @@
 @using Blazored.Toast;
 @using BlazorBootstrap;
 @using CurrieTechnologies.Razor.SweetAlert2;
+@using FrontEnd.Helpers
 
 @inject IUsersService userSerive
 @inject IMapper mapper
@@ -27,18 +28,32 @@
                 </button>
             </div>
             <div class="modal-body">
-                <label>Email</label>
-                <input type="text" @bind="newUser.Email" placeholder="Email" class="form-control" required />
-                <label>Designation</label>
-                <input type="text" @bind="newUser.Designation" placeholder="Designation" class="form-control" required />
-                <label>Reporting Manager</label>
-                <input type="text" @bind="newUser.ReportingManager" placeholder="Reporting Manager" class="form-control" required />
-                <label>Joining Date</label>
-                <input type="date" @bind="newUser.JoiningDate" class="form-control" required max="@DateTime.Today.ToString("yyyy-MM-dd")"/>
-                <label>Date Of Birth</label>
-                <input type="date" @bind="newUser.DateOfBirth" class="form-control" required />
-                <label>Display Name</label>
-                <input type="text" @bind="newUser.DisplayName" placeholder="Display Name" class="form-control" required />
+
+                <div class="container-input">
+                    <label>Email</label>
+                    <input type="text" @bind="newUser.Email" placeholder="Email" class="form-control" required />
+                </div>
+
+                <div class="container-input">
+                    <label>Designation</label>
+                    <input type="text" @bind="newUser.Designation" placeholder="Designation" class="form-control" required />
+                </div>
+                <div class="container-input">
+                    <label>Reporting Manager</label>
+                    <input type="text" @bind="newUser.ReportingManager" placeholder="Reporting Manager" class="form-control" required />
+                </div>
+                <div class="container-input">
+                    <label>Joining Date</label>
+                    <input type="date" @bind="newUser.JoiningDate" class="form-control" required min="2015-01-01" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="container-input">
+                    <label>Date Of Birth</label>
+                    <input type="date" @bind="newUser.DateOfBirth" class="form-control" required min="@minDoB.ToString("yyyy-MM-dd")" max="@maxDoB.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="container-input">
+                    <label>Display Name</label>
+                    <input type="text" @bind="newUser.DisplayName" placeholder="Display Name" class="form-control" required />
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" @onclick="HideModal">Close</button>
@@ -68,6 +83,10 @@
 
     [Parameter] public UserDTO? UserToUpdate { get; set; }
     [Parameter] public EventCallback OnGetUsers { get; set; }
+
+    private DateTime maxDoB = DateTime.Today.AddYears(-18);
+    private DateTime minDoB = DateTime.Today.AddYears(-70);
+    
 
 
     protected override void OnParametersSet()
@@ -150,24 +169,78 @@
 
     private async Task<bool> ValidateForm()
     {
-        if (string.IsNullOrWhiteSpace(newUser.Email) ||
-            string.IsNullOrWhiteSpace(newUser.Designation) ||
-            string.IsNullOrWhiteSpace(newUser.ReportingManager) ||
-            newUser.JoiningDate == default ||
-            newUser.DateOfBirth == default ||
-            string.IsNullOrWhiteSpace(newUser.DisplayName))
+        List<string> missingFields = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(newUser.Email))
         {
+            missingFields.Add("Email is mandatory.");
+        }
+        else if (!DataManager.IsValidEmail(newUser.Email))
+        {
+            missingFields.Add("The email entered is not valid.");
+        }
+
+        if (string.IsNullOrWhiteSpace(newUser.Designation))
+        {
+            missingFields.Add("Designation is mandatory.");
+        }
+
+        if (string.IsNullOrWhiteSpace(newUser.ReportingManager))
+        {
+            missingFields.Add("Reporting Manager is mandatory.");
+        }
+
+        if (newUser.JoiningDate == default)
+        {
+            missingFields.Add("Joining Date is mandatory.");
+        }
+
+        if (newUser.JoiningDate < new DateTime(2015, 1, 1) || newUser.JoiningDate > DateTime.Today)
+        {
+            missingFields.Add("Joining Date must be between January 1, 2015, and the current date.");
+        }
+
+
+        if (newUser.DateOfBirth == default)
+        {
+            missingFields.Add("Date Of Birth is mandatory.");
+        }
+
+        int age = DateTime.Today.Year - newUser.DateOfBirth.Year;
+        if (newUser.DateOfBirth.Date > DateTime.Today.AddYears(-age))
+        {
+            age--;
+        }
+        if (age < 18)
+        {
+            missingFields.Add("You must be at least 18 years old.");
+        }
+        else if (age > 70)
+        {
+            missingFields.Add("You cannot be older than 70 years old.");
+        }
+
+        if (string.IsNullOrWhiteSpace(newUser.DisplayName))
+        {
+            missingFields.Add("Display Name is mandatory.");
+        }
+
+        if (missingFields.Any())
+        {
+            var errorMessageHtml = DataManager.BuildErrorMessageHtml(missingFields);
+
             var resultAlert = await alert.FireAsync(new SweetAlertOptions
                 {
                     Title = "Incomplete form",
-                    Text = "You must fill out all fields correctly to proceed.",
+                    Html = errorMessageHtml,
                     Icon = SweetAlertIcon.Error,
                     ShowCancelButton = false
-            });
+                });
 
             return false;
         }
 
         return true;
     }
+
 }

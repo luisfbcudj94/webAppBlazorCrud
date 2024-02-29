@@ -218,6 +218,8 @@
     private void AddEmployee()
     {
         newUser = new UserDTO();
+        newUser.DateOfBirth = DateTime.Today.AddYears(-30);
+        newUser.JoiningDate = new DateTime(2015, 1, 1);
 
         showModal = true;
         isUpdate = false;

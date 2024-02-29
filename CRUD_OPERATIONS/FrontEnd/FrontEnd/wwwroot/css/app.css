@@ -133,6 +133,10 @@ code {
     color: #dc3545;
 }
 
-.navbar-brand{
+.modal .modal-body .container-input {
+    margin-bottom: 12px; 
+}
+
+.navbar-brand {
     margin-left: 20px;
 }
